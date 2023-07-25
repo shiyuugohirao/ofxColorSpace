@@ -1,14 +1,11 @@
 #include "Conversion.h"
 #include "ColorSpace.h"
+#include "Utils.h"
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <algorithm>
 
-// use ofMath
-#include "ofMathConstants.h"
-
 namespace ColorSpace {
-
 	double Hue_2_RGB(double v1, double v2, double vh) {
 		if (vh < 0) vh += 1;
 		if (vh > 1) vh -= 1;
@@ -17,6 +14,8 @@ namespace ColorSpace {
 		if (3 * vh < 2) return v1 + (v2 - v1)*(2.0 / 3.0 - vh) * 6;
 		return v1;
 	}
+
+
 
 	void RgbConverter::ToColorSpace(Rgb *color, Rgb *item) {
 		item->r = color->r;
@@ -82,7 +81,7 @@ namespace ColorSpace {
 				item->s = delta / (max + min) * 100;
 			}
 			else {
-				item->s = delta / (1 - abs(2 * item->l - 1)) * 100;
+				item->s = delta / (1 - std::abs(2 * item->l - 1)) * 100;
 			}
 
 			if (r == max) {
@@ -140,9 +139,9 @@ namespace ColorSpace {
 		double x = item->a / 500.0 + y;
 		double z = y - item->b / 200.0;
 
-		double x3 = pow(x, 3.);
-		double y3 = pow(y, 3.);
-		double z3 = pow(z, 3.);
+		double x3 = POW3(x);
+		double y3 = POW3(y);
+		double z3 = POW3(z);
 
 		x = ((x3 > 0.008856) ? x3 : ((x - 16.0 / 116.0) / 7.787)) * 95.047;
 		y = ((y3 > 0.008856) ? y3 : ((y - 16.0 / 116.0) / 7.787)) * 100.0;
@@ -160,7 +159,7 @@ namespace ColorSpace {
 		double c = sqrt(lab.a*lab.a + lab.b*lab.b);
 		double h = atan2(lab.b, lab.a);
 
-		h = h / PI * 180;
+		h = h / M_PI * 180;
 		if (h < 0) {
 			h += 360;
 		}
@@ -175,7 +174,7 @@ namespace ColorSpace {
 	void LchConverter::ToColor(Rgb *color, Lch *item) {
 		Lab lab;
 
-		item->h = item->h * PI / 180;
+		item->h = item->h * M_PI / 180;
 
 		lab.l = item->l;
 		lab.a = cos(item->h)*item->c;
@@ -201,7 +200,7 @@ namespace ColorSpace {
 		const Xyz &white = XyzConverter::whiteReference;
 		Xyz xyz;
 
-		double y = (item->l > XyzConverter::eps*XyzConverter::kappa) ? pow((item->l + 16) / 116, 3) : (item->l / XyzConverter::kappa);
+		double y = (item->l > XyzConverter::eps*XyzConverter::kappa) ? POW3((item->l + 16) / 116) : (item->l / XyzConverter::kappa);
 		double tempr = white.x + 15 * white.y + 3 * white.z;
 		double up = 4 * white.x / tempr;
 		double vp = 9 * white.y / tempr;
@@ -257,7 +256,7 @@ namespace ColorSpace {
 		k = std::min(k, cmy.y);
 
 		item->k = k;
-		if (abs(item->k - 1) < 1e-3) {
+		if (std::abs(item->k - 1) < 1e-3) {
 			item->c = 0;
 			item->m = 0;
 			item->y = 0;
@@ -310,7 +309,7 @@ namespace ColorSpace {
 	void HsvConverter::ToColor(Rgb *color, Hsv *item) {
 		int range = (int)floor(item->h / 60);
 		double c = item->v*item->s;
-		double x = c*(1 - abs(fmod(item->h / 60, 2) - 1));
+		double x = c*(1 - std::abs(fmod(item->h / 60, 2) - 1));
 		double m = item->v - c;
 
 		switch (range) {

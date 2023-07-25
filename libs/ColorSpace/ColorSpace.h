@@ -6,175 +6,175 @@
 #include "glm/glm.hpp"
 
 namespace ColorSpace {
-	struct IColorSpace {
-		IColorSpace() {}
-		virtual ~IColorSpace() {}
+struct IColorSpace {
+  IColorSpace() {}
+  virtual ~IColorSpace() {}
 
-		virtual void Initialize(Rgb *color) = 0;
-		virtual void ToRgb(Rgb *color) = 0;
-		virtual void Copy(IColorSpace *color) = 0;
-		template <typename TColorSpace>
-		void To(TColorSpace *color) {
-			Rgb rgb;
+  virtual void      Initialize(Rgb *color)   = 0;
+  virtual void      ToRgb(Rgb *color)        = 0;
+  virtual void      Copy(IColorSpace *color) = 0;
+  virtual glm::vec3 getComponent()           = 0;
 
-			if (typeid(*this) == typeid(*color)) {
-				this->Copy(color);
-			}
-			else {
-				this->ToRgb(&rgb);
-				IConverter<TColorSpace>::ToColorSpace(&rgb, color);
-			}
-		}
+  template <typename TColorSpace>
+  void To(TColorSpace *color);
+};
 
-		virtual glm::vec3 getComponent() = 0;
+struct Rgb : public IColorSpace {
+  double r, g, b;
 
-	};
+  Rgb();
+  Rgb(double r, double g, double b);
 
+  virtual void      Initialize(Rgb *color);
+  virtual void      ToRgb(Rgb *color);
+  virtual void      Copy(IColorSpace *color);
+  virtual glm::vec3 getComponent() { return glm::vec3(r, g, b); }
+};
 
-	struct Rgb : public IColorSpace {
-		double r, g, b;
+struct Xyz : public IColorSpace {
+  double x, y, z;
 
-		Rgb();
-		Rgb(double r, double g, double b);
+  Xyz();
+  Xyz(double x, double y, double z);
 
-		void Initialize(Rgb *color);
-		void ToRgb(Rgb *color);
-		void Copy(IColorSpace *color);
-		glm::vec3 getComponent() { return glm::vec3(r, g, b); }
-	};
+  virtual void      Initialize(Rgb *color);
+  virtual void      ToRgb(Rgb *color);
+  virtual void      Copy(IColorSpace *color);
+  virtual glm::vec3 getComponent() { return glm::vec3(x, y, z); }
+};
 
-	struct Xyz : public IColorSpace {
-		double x, y, z;
+struct Hsl : public IColorSpace {
+  double h, s, l;
 
-		Xyz();
-		Xyz(double x, double y, double z);
+  Hsl();
+  Hsl(double h, double s, double l);
 
-		void Initialize(Rgb *color);
-		void ToRgb(Rgb *color);
-		void Copy(IColorSpace *color);
-		glm::vec3 getComponent() { return glm::vec3(x, y, z); }
-	};
+  virtual void      Initialize(Rgb *color);
+  virtual void      ToRgb(Rgb *color);
+  virtual void      Copy(IColorSpace *color);
+  virtual glm::vec3 getComponent() { return glm::vec3(h, s, l); }
+};
 
-	struct Hsl : public IColorSpace {
-		double h, s, l;
+struct Lab : public IColorSpace {
+  double l, a, b;
 
-		Hsl();
-		Hsl(double h, double s, double l);
+  Lab();
+  Lab(double l, double a, double b);
 
-		void Initialize(Rgb *color);
-		void ToRgb(Rgb *color);
-		void Copy(IColorSpace *color);
-		glm::vec3 getComponent() { return glm::vec3(h, s, l); }
-	};
+  virtual void      Initialize(Rgb *color);
+  virtual void      ToRgb(Rgb *color);
+  virtual void      Copy(IColorSpace *color);
+  virtual glm::vec3 getComponent() { return glm::vec3(l, a, b); }
+};
 
-	struct Lab : public IColorSpace {
-		double l, a, b;
+struct Lch : public IColorSpace {
+  double l, c, h;
 
-		Lab();
-		Lab(double l, double a, double b);
+  Lch();
+  Lch(double l, double c, double h);
 
-		void Initialize(Rgb *color);
-		void ToRgb(Rgb *color);
-		void Copy(IColorSpace *color);
-		glm::vec3 getComponent() { return glm::vec3(l, a, b); }
-	};
+  virtual void      Initialize(Rgb *color);
+  virtual void      ToRgb(Rgb *color);
+  virtual void      Copy(IColorSpace *color);
+  virtual glm::vec3 getComponent() { return glm::vec3(l, c, h); }
+};
 
-	struct Lch : public IColorSpace {
-		double l, c, h;
+struct Luv : public IColorSpace {
+  double l, u, v;
 
-		Lch();
-		Lch(double l, double c, double h);
+  Luv();
+  Luv(double l, double u, double v);
 
-		void Initialize(Rgb *color);
-		void ToRgb(Rgb *color);
-		void Copy(IColorSpace *color);
-		glm::vec3 getComponent() { return glm::vec3(l, c, h); }
-	};
+  virtual void      Initialize(Rgb *color);
+  virtual void      ToRgb(Rgb *color);
+  virtual void      Copy(IColorSpace *color);
+  virtual glm::vec3 getComponent() { return glm::vec3(l, u, v); }
+};
 
-	struct Luv : public IColorSpace {
-		double l, u, v;
+struct Yxy : public IColorSpace {
+  double y1, x, y2;
 
-		Luv();
-		Luv(double l, double u, double v);
+  Yxy();
+  Yxy(double y1, double x, double y2);
 
-		void Initialize(Rgb *color);
-		void ToRgb(Rgb *color);
-		void Copy(IColorSpace *color);
-		glm::vec3 getComponent() { return glm::vec3(l, u, v); }
-	};
+  virtual void      Initialize(Rgb *color);
+  virtual void      ToRgb(Rgb *color);
+  virtual void      Copy(IColorSpace *color);
+  virtual glm::vec3 getComponent() { return glm::vec3(y1, x, y2); }
+};
 
-	struct Yxy : public IColorSpace {
-		double y1, x, y2;
+struct Cmy : public IColorSpace {
+  double c, m, y;
 
-		Yxy();
-		Yxy(double y1, double x, double y2);
+  Cmy();
+  Cmy(double c, double m, double y);
 
-		void Initialize(Rgb *color);
-		void ToRgb(Rgb *color);
-		void Copy(IColorSpace *color);
-		glm::vec3 getComponent() { return glm::vec3(y1, x, y2); }
-	};
+  virtual void      Initialize(Rgb *color);
+  virtual void      ToRgb(Rgb *color);
+  virtual void      Copy(IColorSpace *color);
+  virtual glm::vec3 getComponent() { return glm::vec3(c, m, y); }
+};
 
-	struct Cmy : public IColorSpace {
-		double c, m, y;
+struct Cmyk : public IColorSpace {
+  double c, m, y, k;
 
-		Cmy();
-		Cmy(double c, double m, double y);
+  Cmyk();
+  Cmyk(double c, double m, double y, double k);
 
-		void Initialize(Rgb *color);
-		void ToRgb(Rgb *color);
-		void Copy(IColorSpace *color);
-		glm::vec3 getComponent() { return glm::vec3(c, m, y); }
-	};
+  virtual void      Initialize(Rgb *color);
+  virtual void      ToRgb(Rgb *color);
+  virtual void      Copy(IColorSpace *color);
+  virtual glm::vec3 getComponent() { return glm::vec3(c, m, y); }
+};
 
-	struct Cmyk : public IColorSpace {
-		double c, m, y, k;
+struct Hsv : public IColorSpace {
+  double h, s, v;
 
-		Cmyk();
-		Cmyk(double c, double m, double y, double k);
+  Hsv();
+  Hsv(double h, double s, double v);
 
-		void Initialize(Rgb *color);
-		void ToRgb(Rgb *color);
-		void Copy(IColorSpace *color);
-		glm::vec3 getComponent() { return glm::vec3(c, m, y); }
-	};
+  virtual void      Initialize(Rgb *color);
+  virtual void      ToRgb(Rgb *color);
+  virtual void      Copy(IColorSpace *color);
+  virtual glm::vec3 getComponent() { return glm::vec3(h, s, v); }
+};
 
-	struct Hsv : public IColorSpace {
-		double h, s, v;
+struct Hsb : public IColorSpace {
+  double h, s, b;
 
-		Hsv();
-		Hsv(double h, double s, double v);
+  Hsb();
+  Hsb(double h, double s, double b);
 
-		void Initialize(Rgb *color);
-		void ToRgb(Rgb *color);
-		void Copy(IColorSpace *color);
-		glm::vec3 getComponent() { return glm::vec3(h, s, v); }
-	};
+  virtual void      Initialize(Rgb *color);
+  virtual void      ToRgb(Rgb *color);
+  virtual void      Copy(IColorSpace *color);
+  virtual glm::vec3 getComponent() { return glm::vec3(h, s, b); }
+};
 
-	struct Hsb : public IColorSpace {
-		double h, s, b;
+struct HunterLab : public IColorSpace {
+  double l, a, b;
 
-		Hsb();
-		Hsb(double h, double s, double b);
+  HunterLab();
+  HunterLab(double l, double a, double b);
 
-		void Initialize(Rgb *color);
-		void ToRgb(Rgb *color);
-		void Copy(IColorSpace *color);
-		glm::vec3 getComponent() { return glm::vec3(h, s, b); }
-	};
+  virtual void      Initialize(Rgb *color);
+  virtual void      ToRgb(Rgb *color);
+  virtual void      Copy(IColorSpace *color);
+  virtual glm::vec3 getComponent() { return glm::vec3(l, a, b); }
+};
 
-	struct HunterLab : public IColorSpace {
-		double l, a, b;
+template <typename TColorSpace>
+void IColorSpace::To(TColorSpace *color) {
+  Rgb rgb;
 
-		HunterLab();
-		HunterLab(double l, double a, double b);
-
-		void Initialize(Rgb *color);
-		void ToRgb(Rgb *color);
-		void Copy(IColorSpace *color);
-		glm::vec3 getComponent() { return glm::vec3(l, a, b); }
-	};
+  if (typeid(*this) == typeid(*color)) {
+    this->Copy(color);
+  } else {
+    this->ToRgb(&rgb);
+    IConverter<TColorSpace>::ToColorSpace(&rgb, color);
+  }
 }
 
-#endif // COLOR_SPACE_H
+}  // namespace ColorSpace
 
+#endif  // COLOR_SPACE_H
